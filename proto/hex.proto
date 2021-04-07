@@ -1,0 +1,79 @@
+syntax = "proto3";
+package biba.reports.v2;
+option go_package = "github.com/seanhagen/hex_test_backend/pb";
+
+enum Directions {
+  LEFT_UP = 0;
+  UP = 1;
+  RIGHT_UP = 2;
+  RIGHT_DOWN = 3;
+  DOWN = 4;
+  LEFT_DOWN = 5;
+}
+
+message Player {
+  string name = 1;
+  
+  
+  Hex position = 100;
+}
+
+
+enum TileType {
+  VOID = 0;
+  BASIC = 1;
+  WATER = 2;
+  ROCK = 3;
+}
+
+message Hex {
+  int64 x = 1;
+  int64 y = 2;
+
+  TileType type = 3;
+  map<int32,Hex> neighbours = 4;
+}
+
+message Map {
+  repeated Hex tiles = 1;
+}
+
+message RegisterRequest {
+  string name = 1;
+}
+
+message RegisterResponse {
+  int64 id = 1;
+  string code = 2;
+}
+
+message Chat {
+  string msg = 1;
+}
+
+message Register {
+  string code = 1;
+}
+
+message State {
+  int32 current_player = 1;
+  Map map = 2;
+}
+
+message Input {
+  oneof data {
+    Register register = 1;
+    Chat chat = 2;
+  }
+}
+
+message Output {
+  oneof data {
+    State state = 1;
+  }
+}
+
+service Service {
+  rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  rpc Game(stream Input) returns (stream Output) {} 
+}
